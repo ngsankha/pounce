@@ -1,0 +1,20 @@
+Pounce
+~~~~~~~~~~~~~~~~~~~~~~
+Programmed by Sankha Narayan Guria
+Email : sankha93@gmail.com
+URL : https://github.com/sankha93/pounce
+
+Pounce is a simple command line utility that allows you to access 
+quick lists from the command line and store key/value pairs in 
+different quickly accessible lists. These can be accessed from the 
+command line via simple commands (and can also be copied to the 
+clipboard).
+
+You can use it to do stuff like:
+~ Keep regularly used URLs to which you need quick access.
+~ Maintaining a simple to-do list rather than a task manager
+~ Mainting text snippets and and any other random pastes, code 
+  snippets that ypu may use later.
+
+The program is released under the Terms and Conditions of the GNU 
+General Public License Version 3.

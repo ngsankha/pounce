@@ -19,6 +19,9 @@
 
 package sngforge.pounce;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,6 +33,7 @@ public class Pounce {
 	
 	public static void main(String args[]){
 		Pounce p=new Pounce();
+		p.init();
 		if(args.length==0)
 			p.showHelp();
 	}
@@ -54,7 +58,6 @@ public class Pounce {
 	}
 	
 	void newList(String listname)throws Exception{
-		init();
 		Properties p=new Properties();
 		FileOutputStream fout=new FileOutputStream(System.getProperty("user.home")+"/.pounce/"+listname);
 		p.storeToXML(fout, "Pounce List");
@@ -62,7 +65,6 @@ public class Pounce {
 	}
 	
 	void add(String listname, String name, String val) throws Exception{
-		init();
 		Properties p=new Properties();
 		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
 			System.out.println("The list doesn't exist. Create that list before you use!");
@@ -74,5 +76,49 @@ public class Pounce {
 		FileOutputStream fout=new FileOutputStream(System.getProperty("user.home")+"/.pounce/"+listname);
 		p.storeToXML(fout, "Pounce List");
 		System.out.println("Added "+name+" to "+listname+"!!");
+	}
+	
+	void show(String listname, String name) throws Exception{
+		Properties p=new Properties();
+		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
+			System.out.println("The list doesn't exist. Create that list before you use!");
+			return;
+		}
+		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+		p.loadFromXML(fin);
+		System.out.println(p.get(name));
+	}
+	
+	void get(String listname, String name) throws Exception{
+		Properties p=new Properties();
+		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
+			System.out.println("The list doesn't exist. Create that list before you use!");
+			return;
+		}
+		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+		p.loadFromXML(fin);
+		String val=p.getProperty(name);
+		if(val.isEmpty())
+			System.out.println("That item doesn't exist in the list!");
+		else{
+			StringSelection data = new StringSelection(val);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(data, data);
+			System.out.println(val+" is on the clipboard now!");
+		}
+	}
+	
+	void delete(String listname, String name) throws Exception{
+		Properties p=new Properties();
+		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
+			System.out.println("The list doesn't exist. Create that list before you use!");
+			return;
+		}
+		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+		p.loadFromXML(fin);
+		p.remove(name);
+		FileOutputStream fout=new FileOutputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+		p.storeToXML(fout, "Pounce List");
+		System.out.println("Removed "+name+" from the list "+listname);
 	}
 }
