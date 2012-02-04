@@ -25,7 +25,9 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 public class Pounce {
 	
@@ -48,7 +50,7 @@ public class Pounce {
 		System.out.println("delete <listname> <item> : Delete <item> from <listname> list. If <item> is not specified the full list will be deleted.");
 		System.out.println("list : List all the lists");
 		System.out.println("help : Show this message");
-		System.out.println("about : Information about Panther");
+		System.out.println("about : Information about Pounce");
 	}
 	
 	void init(){
@@ -67,7 +69,7 @@ public class Pounce {
 	void add(String listname, String name, String val) throws Exception{
 		Properties p=new Properties();
 		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
-			System.out.println("The list doesn't exist. Create that list before you use!");
+			System.out.println("The list doesn't exist. Create that list before you pounce!");
 			return;
 		}
 		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
@@ -81,18 +83,26 @@ public class Pounce {
 	void show(String listname, String name) throws Exception{
 		Properties p=new Properties();
 		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
-			System.out.println("The list doesn't exist. Create that list before you use!");
+			System.out.println("The list doesn't exist. Create that list before you pounce!");
 			return;
 		}
 		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
 		p.loadFromXML(fin);
-		System.out.println(p.get(name));
+		if(name.isEmpty()){
+			Set<Object> keys=p.keySet();
+			Iterator<Object> it=keys.iterator();
+			while(it.hasNext()){
+				String key=(String)it.next();
+				System.out.println(key+"\t"+p.get(key));
+			}
+		}else
+			System.out.println(p.get(name));
 	}
 	
 	void get(String listname, String name) throws Exception{
 		Properties p=new Properties();
 		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
-			System.out.println("The list doesn't exist. Create that list before you use!");
+			System.out.println("The list doesn't exist. Create that list before you pounce!");
 			return;
 		}
 		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
@@ -111,14 +121,40 @@ public class Pounce {
 	void delete(String listname, String name) throws Exception{
 		Properties p=new Properties();
 		if(!new File(System.getProperty("user.home")+"/.pounce/"+listname).exists()){
-			System.out.println("The list doesn't exist. Create that list before you use!");
+			System.out.println("The list doesn't exist. Create that list before you pounce!");
 			return;
 		}
-		FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
-		p.loadFromXML(fin);
-		p.remove(name);
-		FileOutputStream fout=new FileOutputStream(System.getProperty("user.home")+"/.pounce/"+listname);
-		p.storeToXML(fout, "Pounce List");
-		System.out.println("Removed "+name+" from the list "+listname);
+		if(name.isEmpty()){
+			FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+			p.loadFromXML(fin);
+			p.remove(name);
+			FileOutputStream fout=new FileOutputStream(System.getProperty("user.home")+"/.pounce/"+listname);
+			p.storeToXML(fout, "Pounce List");
+			System.out.println("Removed "+name+" from the list "+listname);
+		}else{
+			File f=new File(System.getProperty("user.home")+"/.pounce/"+listname);
+			if(f.delete())
+				System.out.println(listname+" was removed.");
+			else
+				System.out.println(listname+" could not be removed.");
+		}
+	}
+	
+	void list() throws Exception{
+		File lists[]=home.listFiles();
+		for(int i=0;i<lists.length;i++){
+			Properties p=new Properties();
+			FileInputStream fin=new FileInputStream(lists[i]);
+			p.loadFromXML(fin);
+			System.out.println(lists[i].getName()+"("+p.size()+")");
+		}
+	}
+	
+	void about(){
+		System.out.println("Pounce, Programmed by Sankha Narayan Guria (sankha93@gmail.com)\n");
+		System.out.println("Pounce is a simple command line utility that allows you to access quick lists from the command line and store key/value pairs in different quickly accessible lists. These can be accessed from the command line via simple commands (and can also be copied to the clipboard).");
+		System.out.println("\nEmail: sankha93@gmail.com");
+		System.out.println("URL: https://github.com/sankha93/pounce\n");
+		System.out.println("This program is released under the Terms and Conditions of the GNU General Public License Version 3.");
 	}
 }
