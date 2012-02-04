@@ -20,24 +20,52 @@
 package sngforge.pounce;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.Set;
 
-public class Pounce {
+public class Pounce{
 	
 	File home;
-	
-	public static void main(String args[]){
+	public static void main(String args[]) throws Exception{
 		Pounce p=new Pounce();
+		String[] arg={"","","",""};
+		int min=args.length<4?args.length:4;
+		for(int i=0;i<min;i++)
+			arg[i]=args[i];
 		p.init();
 		if(args.length==0)
 			p.showHelp();
+		else{
+			try{
+				if(arg[0].equals("new"))
+					p.newList(arg[1]);
+				else if(arg[0].equals("add"))
+					p.add(arg[1], arg[2], arg[3]);
+				else if(arg[0].equals("show"))
+					p.show(arg[1], arg[2]);
+				else if(arg[0].equals("get"))
+					p.get(arg[1], arg[2]);
+				else if(arg[0].equals("delete"))
+					p.delete(arg[1], arg[2]);
+				else if(arg[0].equals("list"))
+					p.list();
+				else if(arg[0].equals("help"))
+					p.showHelp();
+				else if(arg[0].equals("about"))
+					p.about();
+				else
+					System.out.println("Unrecognised option.");
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 	
 	void showHelp(){
@@ -111,10 +139,11 @@ public class Pounce {
 		if(val.isEmpty())
 			System.out.println("That item doesn't exist in the list!");
 		else{
-			StringSelection data = new StringSelection(val);
-			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clipboard.setContents(data, data);
+			Transferable data = new StringSelection(val);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(data, null);
 			System.out.println(val+" is on the clipboard now!");
+			Scanner scanner = new Scanner(System.in);
+	        scanner.nextLine();
 		}
 	}
 	
@@ -124,7 +153,7 @@ public class Pounce {
 			System.out.println("The list doesn't exist. Create that list before you pounce!");
 			return;
 		}
-		if(name.isEmpty()){
+		if(!name.isEmpty()){
 			FileInputStream fin=new FileInputStream(System.getProperty("user.home")+"/.pounce/"+listname);
 			p.loadFromXML(fin);
 			p.remove(name);
